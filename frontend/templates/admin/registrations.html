@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Event Registrations - {{ event.title }}{% endblock %}
+
+{% block auth_content %}
+<div class="mb-6">
+    <a href="{% if current_user.role == 'superadmin' %}{{ url_for('admin.admin_dashboard') }}{% else %}{{ url_for('organizer.organizer_dashboard') }}{% endif %}" class="text-blue-600 hover:underline">&larr; Back</a>
+</div>
+
+<div class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h1 class="text-3xl font-bold text-gray-800 mb-4">{{ event.title }}</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div>
+            <p class="text-gray-700"><span class="font-semibold">Date:</span> {{ event.event_date.strftime('%B %d, %Y at %H:%M') }}</p>
+            <p class="text-gray-700"><span class="font-semibold">Location:</span> {{ event.location }}</p>
+        </div>
+        <div>
+            <p class="text-gray-700"><span class="font-semibold">Capacity:</span> {{ event.capacity }}</p>
+            <p class="text-gray-700"><span class="font-semibold">Registered:</span> {{ registrations|length }}</p>
+        </div>
+    </div>
+</div>
+
+<!-- Export Buttons -->
+<div class="mb-6 flex gap-4">
+    <a href="{{ url_for('export_csv', event_id=event.id) }}" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 font-semibold">
+        Export CSV
+    </a>
+    <a href="{{ url_for('export_pdf', event_id=event.id) }}" class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 font-semibold">
+        Export PDF
+    </a>
+</div>
+
+<!-- Registrations Table -->
+<div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <h2 class="text-2xl font-bold p-6 border-b">Registered Students</h2>
+    
+    {% if registrations|length > 0 %}
+    <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="px-6 py-3 text-left">#</th>
+                    <th class="px-6 py-3 text-left">Name</th>
+                    <th class="px-6 py-3 text-left">Email</th>
+                    <th class="px-6 py-3 text-left">Phone</th>
+                    <th class="px-6 py-3 text-left">Payment</th>
+                    <th class="px-6 py-3 text-left">Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reg in registrations %}
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="px-6 py-4">{{ loop.index }}</td>
+                    <td class="px-6 py-4">{{ reg.student.name }}</td>
+                    <td class="px-6 py-4">{{ reg.student.email }}</td>
+                    <td class="px-6 py-4">{{ reg.phone_number or 'N/A' }}</td>
+                    <td class="px-6 py-4"><span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm font-semibold">{{ reg.payment_method | capitalize }}</span></td>
+                    <td class="px-6 py-4">{{ reg.registration_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-8 text-gray-500">
+        <p>No registrations yet for this event</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

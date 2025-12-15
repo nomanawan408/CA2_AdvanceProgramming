@@ -1,7 +1,8 @@
 """
 Simple test script to verify the application works
 """
-from app import app, db, User, Society, Event, Registration
+from backend.main import app
+from models import db, User, Society, Event, Registration
 from datetime import datetime
 
 def test_system():

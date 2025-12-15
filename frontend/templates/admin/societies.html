@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Societies - Admin{% endblock %}
+
+{% block auth_content %}
+<div class="mb-6 flex justify-between items-center">
+    <div>
+        <h1 class="text-3xl font-bold text-gray-800">Societies</h1>
+        <p class="text-gray-600">Manage all societies</p>
+    </div>
+    <a href="{{ url_for('admin.admin_add_society') }}" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 font-semibold">
+        Add Society
+    </a>
+</div>
+
+{% if societies %}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for society in societies %}
+    <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
+        <h3 class="text-xl font-bold text-gray-800 mb-2">{{ society.name }}</h3>
+        <p class="text-gray-600 mb-4">{{ society.description }}</p>
+        <div class="text-sm text-gray-500">
+            <p><span class="font-semibold">Head:</span> {{ society.head.name }}</p>
+            <p><span class="font-semibold">Events:</span> {{ society.events|length }}</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-12 bg-white rounded-lg shadow-md">
+    <p class="text-gray-500 text-xl">No societies yet</p>
+    <a href="{{ url_for('admin.admin_add_society') }}" class="inline-block bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 font-semibold mt-4">
+        Create First Society
+    </a>
+</div>
+{% endif %}
+{% endblock %}
