@@ -67,7 +67,7 @@ def register_event(event_id):
                     filename = f"{current_user.id}_{event_id}_{invoice_file.filename}"
                     file_path = os.path.join(upload_folder, filename)
                     invoice_file.save(file_path)
-                    invoice_path = os.path.join("static", "invoices", filename)
+                    invoice_path = os.path.join("static", "invoices", filename).replace("\\", "/")
                 except Exception as e:
                     flash(f"Error uploading invoice: {str(e)}", "danger")
                     return redirect(url_for("student.register_event", event_id=event_id))
