@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Register for {{ event.title }}{% endblock %}
+
+{% block auth_content %}
+<div class="max-w-2xl mx-auto bg-white rounded-lg shadow-xl p-8">
+    <h2 class="text-3xl font-bold text-gray-800 mb-4">{{ event.title }}</h2>
+    <p class="text-gray-600 mb-6">{{ event.description }}</p>
+
+    <div class="mb-6 p-4 bg-blue-50 border-l-4 border-blue-500 text-blue-700">
+        <p class="font-semibold">Event Details:</p>
+        <p>Date: {{ event.event_date.strftime('%B %d, %Y at %H:%M') }}</p>
+        <p>Location: {{ event.location }}</p>
+        <p>Capacity: {{ event.get_registered_count() }} / {{ event.capacity }}</p>
+        {% if event.is_paid %}
+            <p class="font-bold text-red-600">Cost: €{{ "%.2f" | format(event.cost) }}</p>
+        {% else %}
+            <p class="font-bold text-green-600">Cost: Free</p>
+        {% endif %}
+    </div>
+
+    <form method="POST" action="{{ url_for('register_event', event_id=event.id) }}" enctype="multipart/form-data">
+        <div class="mb-4">
+            <label for="name" class="block text-gray-700 font-semibold mb-2">Full Name</label>
+            <input type="text" id="name" name="name" value="{{ current_user.name }}" disabled
+                   class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50">
+        </div>
+
+        <div class="mb-4">
+            <label for="email" class="block text-gray-700 font-semibold mb-2">Email</label>
+            <input type="email" id="email" name="email" value="{{ current_user.email }}" disabled
+                   class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50">
+        </div>
+
+        <div class="mb-6">
+            <label for="phone_number" class="block text-gray-700 font-semibold mb-2">Phone Number</label>
+            <input type="tel" id="phone_number" name="phone_number" required
+                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        {% if event.is_paid %}
+        <div class="mb-6 p-4 border border-yellow-300 rounded-lg bg-yellow-50">
+            <h3 class="text-xl font-bold text-yellow-800 mb-3">Payment Details (Cost: €{{ "%.2f" | format(event.cost) }})</h3>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 font-semibold mb-2">Payment Method</label>
+                <div class="flex items-center space-x-6">
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="payment_method" value="onsite" class="form-radio text-blue-600" required onclick="toggleInvoice(false)">
+                        <span class="ml-2 text-gray-700">Onsite Payment</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="payment_method" value="online" class="form-radio text-blue-600" required onclick="toggleInvoice(true)">
+                        <span class="ml-2 text-gray-700">Online Payment (Upload Invoice)</span>
+                    </label>
+                </div>
+            </div>
+
+            <div id="invoice-upload" class="mt-4 p-4 border border-dashed border-gray-400 rounded-lg hidden">
+                <label for="invoice" class="block text-gray-700 font-semibold mb-2">Upload Payment Invoice (PDF/Image)</label>
+                <input type="file" id="invoice" name="invoice" accept=".pdf,.jpg,.jpeg,.png"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <p class="text-sm text-gray-500 mt-1">Please upload proof of payment for online registration.</p>
+            </div>
+        </div>
+        {% else %}
+        <input type="hidden" name="payment_method" value="free">
+        {% endif %}
+
+        <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 font-semibold text-lg transition">
+            Complete Registration
+        </button>
+    </form>
+</div>
+
+<script>
+    function toggleInvoice(show) {
+        const invoiceDiv = document.getElementById('invoice-upload');
+        const invoiceInput = document.getElementById('invoice');
+        if (show) {
+            invoiceDiv.classList.remove('hidden');
+            invoiceInput.setAttribute('required', 'required');
+        } else {
+            invoiceDiv.classList.add('hidden');
+            invoiceInput.removeAttribute('required');
+        }
+    }
+
+    // Initial check for paid events
+    {% if event.is_paid %}
+        document.addEventListener('DOMContentLoaded', function() {
+            const onlineRadio = document.querySelector('input[name="payment_method"][value="online"]');
+            if (onlineRadio && onlineRadio.checked) {
+                toggleInvoice(true);
+            }
+        });
+    {% endif %}
+</script>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Events - Admin{% endblock %}
+
+{% block auth_content %}
+<div class="mb-6 flex justify-between items-center">
+    <div>
+        <h1 class="text-3xl font-bold text-gray-800">All Events</h1>
+        <p class="text-gray-600">Manage all events in the system</p>
+    </div>
+    <a href="{{ url_for('admin_add_event') }}" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 font-semibold">
+        Add Event
+    </a>
+</div>
+
+{% if events %}
+<div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <table class="w-full">
+        <thead class="bg-gray-100">
+            <tr>
+                <th class="px-4 py-2 text-left">Title</th>
+                <th class="px-4 py-2 text-left">Date</th>
+                <th class="px-4 py-2 text-left">Location</th>
+                <th class="px-4 py-2 text-left">Registrations</th>
+                <th class="px-4 py-2 text-left">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for event in events %}
+            <tr class="border-b hover:bg-gray-50">
+                <td class="px-4 py-3">{{ event.title }}</td>
+                <td class="px-4 py-3">{{ event.event_date.strftime('%Y-%m-%d') }}</td>
+                <td class="px-4 py-3">{{ event.location }}</td>
+                <td class="px-4 py-3">{{ event.get_registered_count() }}/{{ event.capacity }}</td>
+                <td class="px-4 py-3">
+                    <a href="{{ url_for('view_registrations', event_id=event.id) }}" class="text-blue-600 hover:underline">View</a>
+                    <a href="{{ url_for('admin_delete_event', event_id=event.id) }}" class="text-red-600 hover:underline ml-2">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="text-center py-12 bg-white rounded-lg shadow-md">
+    <p class="text-gray-500 text-xl">No events yet</p>
+</div>
+{% endif %}
+{% endblock %}

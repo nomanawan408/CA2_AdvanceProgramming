@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Organizers - Admin{% endblock %}
+
+{% block auth_content %}
+<div class="mb-6 flex justify-between items-center">
+    <div>
+        <h1 class="text-3xl font-bold text-gray-800">Organizers</h1>
+        <p class="text-gray-600">Manage all organizer accounts</p>
+    </div>
+    <a href="{{ url_for('admin_add_organizer') }}" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-semibold">
+        Add Organizer
+    </a>
+</div>
+
+<div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <table class="w-full">
+        <thead class="bg-gray-100">
+            <tr>
+                <th class="px-6 py-3 text-left text-gray-700 font-semibold">Name</th>
+                <th class="px-6 py-3 text-left text-gray-700 font-semibold">Email</th>
+                <th class="px-6 py-3 text-left text-gray-700 font-semibold">Society</th>
+                <th class="px-6 py-3 text-left text-gray-700 font-semibold">Events Created</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for organizer in organizers %}
+            <tr class="border-b hover:bg-gray-50">
+                <td class="px-6 py-4">{{ organizer.name }}</td>
+                <td class="px-6 py-4">{{ organizer.email }}</td>
+                <td class="px-6 py-4">
+                    {% if organizer.societies %}
+                        {{ organizer.societies[0].name }}
+                    {% else %}
+                        <span class="text-gray-400">No society</span>
+                    {% endif %}
+                </td>
+                <td class="px-6 py-4">{{ organizer.events_created|length }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    {% if organizers|length == 0 %}
+    <div class="text-center py-8 text-gray-500">
+        No organizers found
+    </div>
+    {% endif %}
+</div>
+
+<div class="mt-6">
+    <a href="{{ url_for('admin_dashboard') }}" class="text-blue-600 hover:underline">&larr; Back to Dashboard</a>
+</div>
+{% endblock %}

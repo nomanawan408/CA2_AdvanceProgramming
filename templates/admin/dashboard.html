@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - DBS Events{% endblock %}
+
+{% block auth_content %}
+<div class="mb-6">
+    <h1 class="text-3xl font-bold text-gray-800">Admin Dashboard</h1>
+    <p class="text-gray-600">Manage the entire event system</p>
+</div>
+
+<!-- Statistics Cards -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-gray-500 text-sm">Total Users</p>
+                <p class="text-3xl font-bold text-blue-600">{{ total_users }}</p>
+            </div>
+            <div class="bg-blue-100 p-3 rounded-full">
+                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                </svg>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-gray-500 text-sm">Societies</p>
+                <p class="text-3xl font-bold text-green-600">{{ total_societies }}</p>
+            </div>
+            <div class="bg-green-100 p-3 rounded-full">
+                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                </svg>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-gray-500 text-sm">Total Events</p>
+                <p class="text-3xl font-bold text-purple-600">{{ total_events }}</p>
+            </div>
+            <div class="bg-purple-100 p-3 rounded-full">
+                <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-gray-500 text-sm">Registrations</p>
+                <p class="text-3xl font-bold text-orange-600">{{ total_registrations }}</p>
+            </div>
+            <div class="bg-orange-100 p-3 rounded-full">
+                <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                </svg>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <a href="{{ url_for('admin_add_organizer') }}" class="bg-blue-600 text-white rounded-lg shadow-md p-6 hover:bg-blue-700 transition">
+        <h3 class="text-xl font-bold mb-2">Add Organizer</h3>
+        <p class="text-blue-100">Create new organizer account</p>
+    </a>
+    
+    <a href="{{ url_for('admin_add_society') }}" class="bg-green-600 text-white rounded-lg shadow-md p-6 hover:bg-green-700 transition">
+        <h3 class="text-xl font-bold mb-2">Add Society</h3>
+        <p class="text-green-100">Create new society</p>
+    </a>
+    
+    <a href="{{ url_for('admin_add_event') }}" class="bg-purple-600 text-white rounded-lg shadow-md p-6 hover:bg-purple-700 transition">
+        <h3 class="text-xl font-bold mb-2">Add Event</h3>
+        <p class="text-purple-100">Create standalone event</p>
+    </a>
+</div>
+
+<!-- Management Links -->
+<div class="bg-white rounded-lg shadow-md p-6 mb-8">
+    <h2 class="text-2xl font-bold mb-4">Management</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <a href="{{ url_for('admin_organizers') }}" class="border border-gray-300 rounded-lg p-4 hover:bg-gray-50 transition">
+            <h3 class="font-semibold text-lg">Manage Organizers</h3>
+            <p class="text-gray-600 text-sm">View and manage all organizers</p>
+        </a>
+        
+        <a href="{{ url_for('admin_societies') }}" class="border border-gray-300 rounded-lg p-4 hover:bg-gray-50 transition">
+            <h3 class="font-semibold text-lg">Manage Societies</h3>
+            <p class="text-gray-600 text-sm">View and manage all societies</p>
+        </a>
+        
+        <a href="{{ url_for('admin_events') }}" class="border border-gray-300 rounded-lg p-4 hover:bg-gray-50 transition">
+            <h3 class="font-semibold text-lg">Manage Events</h3>
+            <p class="text-gray-600 text-sm">View and manage all events</p>
+        </a>
+    </div>
+</div>
+
+<!-- Recent Events -->
+<div class="bg-white rounded-lg shadow-md p-6">
+    <h2 class="text-2xl font-bold mb-4">Recent Events</h2>
+    <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="px-4 py-2 text-left">Event Title</th>
+                    <th class="px-4 py-2 text-left">Date</th>
+                    <th class="px-4 py-2 text-left">Location</th>
+                    <th class="px-4 py-2 text-left">Registrations</th>
+                    <th class="px-4 py-2 text-left">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for event in recent_events %}
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="px-4 py-3">{{ event.title }}</td>
+                    <td class="px-4 py-3">{{ event.event_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td class="px-4 py-3">{{ event.location }}</td>
+                    <td class="px-4 py-3">{{ event.get_registered_count() }} / {{ event.capacity }}</td>
+                    <td class="px-4 py-3">
+                        <a href="{{ url_for('view_registrations', event_id=event.id) }}" class="text-blue-600 hover:underline">View</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
