@@ -9,7 +9,20 @@ public_bp = Blueprint("public", __name__)
 
 @public_bp.route("/", endpoint="index")
 def index():
-    """Public homepage with event listing"""
+    """Public homepage with role-based redirection"""
+    if current_user.is_authenticated:
+        # Redirect based on user role
+        if current_user.role == "superadmin":
+            return redirect(url_for("admin.admin_dashboard"))
+        elif current_user.role == "organizer":
+            return redirect(url_for("organizer.organizer_dashboard"))
+        elif current_user.role == "student":
+            return redirect(url_for("student.student_dashboard"))
+        else:
+            # Fallback to public dashboard if role is unknown
+            return redirect(url_for("public.dashboard"))
+    
+    # Show public homepage for non-authenticated users
     events = Event.query.order_by(Event.event_date.desc()).all()
     return render_template("index.html", events=events)
 

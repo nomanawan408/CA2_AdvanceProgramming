@@ -1,10 +1,11 @@
 import os
 
-from flask import Blueprint, flash, redirect, render_template, request, url_for, current_app
+from datetime import datetime
+from flask import Blueprint, current_app, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
 from backend.decorators import student_required
-from models import Event, Registration
+from models import Event, Registration, Society
 
 
 student_bp = Blueprint("student", __name__)
@@ -46,16 +47,33 @@ def register_event(event_id):
         payment_method = request.form.get("payment_method")
         invoice_path = None
 
+        # Validate phone number
+        if not phone_number or phone_number.strip() == "":
+            flash("Phone number is required", "danger")
+            return redirect(url_for("student.register_event", event_id=event_id))
+
+        # Validate payment method for paid events
+        if event.is_paid and not payment_method:
+            flash("Payment method is required for paid events", "danger")
+            return redirect(url_for("student.register_event", event_id=event_id))
+
         # Handle file upload for online payment
         if payment_method == "online" and "invoice" in request.files:
             invoice_file = request.files["invoice"]
             if invoice_file.filename != "":
-                upload_folder = os.path.join(current_app.static_folder, "invoices")
-                os.makedirs(upload_folder, exist_ok=True)
-                filename = f"{current_user.id}_{event_id}_{invoice_file.filename}"
-                file_path = os.path.join(upload_folder, filename)
-                invoice_file.save(file_path)
-                invoice_path = os.path.join("static", "invoices", filename)
+                try:
+                    upload_folder = os.path.join(current_app.static_folder, "invoices")
+                    os.makedirs(upload_folder, exist_ok=True)
+                    filename = f"{current_user.id}_{event_id}_{invoice_file.filename}"
+                    file_path = os.path.join(upload_folder, filename)
+                    invoice_file.save(file_path)
+                    invoice_path = os.path.join("static", "invoices", filename)
+                except Exception as e:
+                    flash(f"Error uploading invoice: {str(e)}", "danger")
+                    return redirect(url_for("student.register_event", event_id=event_id))
+            else:
+                flash("Invoice file is required for online payment", "danger")
+                return redirect(url_for("student.register_event", event_id=event_id))
 
         # Create registration
         registration = Registration(
@@ -92,3 +110,27 @@ def unregister_event(event_id):
         flash("Successfully unregistered from event", "success")
 
     return redirect(url_for("student.student_dashboard"))
+
+
+@student_bp.route("/student/events", endpoint="browse_events")
+@student_required
+def browse_events():
+    """Browse all available events"""
+    # Get all upcoming events that the student hasn't registered for yet
+    registered_event_ids = [r.event_id for r in 
+                         Registration.query.filter_by(student_id=current_user.id).all()]
+    
+    # Get upcoming events (excluding past events)
+    upcoming_events = Event.query.filter(
+        Event.event_date >= datetime.utcnow()
+    ).order_by(Event.event_date.asc()).all()
+    
+    # Separate events into registered and available
+    registered_events = [e for e in upcoming_events if e.id in registered_event_ids]
+    available_events = [e for e in upcoming_events if e.id not in registered_event_ids]
+    
+    return render_template(
+        "student/browse_events.html",
+        available_events=available_events,
+        registered_events=registered_events
+    )

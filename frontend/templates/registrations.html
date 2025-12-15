@@ -72,7 +72,9 @@
                     </td>
                     <td class="px-6 py-4">
                         {% if reg.invoice_path %}
-                            <a href="{{ url_for('static', filename=reg.invoice_path.split('static/')[-1]) }}" target="_blank" class="text-blue-600 hover:text-blue-900">View Invoice</a>
+                            {% set filename = reg.invoice_path.replace('static/invoices/', '') %}
+                            <!-- Debug: reg.invoice_path = {{ reg.invoice_path }}, filename = {{ filename }} -->
+                            <a href="/invoices/{{ filename }}" target="_blank" class="text-blue-600 hover:text-blue-900">View Invoice</a>
                         {% else %}
                             N/A
                         {% endif %}

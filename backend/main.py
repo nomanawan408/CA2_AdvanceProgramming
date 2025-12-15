@@ -2,7 +2,7 @@
 DBS Event Management System - Main Application
 A simple Flask application for managing events at Dublin Business School
 """
-from flask import Flask
+from flask import Flask, send_from_directory
 from flask_login import LoginManager
 from models import db, User, Society, Event, Registration
 from datetime import datetime
@@ -48,6 +48,35 @@ app.register_blueprint(organizer_bp)
 app.register_blueprint(student_bp)
 app.register_blueprint(exports_bp)
 app.register_blueprint(registrations_bp)
+
+
+# ============== INVOICE SERVING ROUTE ==============
+
+@app.route('/invoices/<filename>')
+def serve_invoice(filename):
+    """Serve invoice files securely"""
+    invoices_dir = os.path.join(app.static_folder, 'invoices')
+    print(f"Looking for invoice: {filename}")
+    print(f"Invoices directory: {invoices_dir}")
+    
+    try:
+        return send_from_directory(invoices_dir, filename)
+    except FileNotFoundError:
+        print(f"File not found: {filename}")
+        # Try to find the file by searching for partial matches
+        import glob
+        pattern = os.path.join(invoices_dir, f"*{filename}*")
+        print(f"Searching with pattern: {pattern}")
+        matching_files = glob.glob(pattern)
+        print(f"Matching files: {matching_files}")
+        if matching_files:
+            actual_filename = os.path.basename(matching_files[0])
+            print(f"Found file: {actual_filename}")
+            return send_from_directory(invoices_dir, actual_filename)
+        return "Invoice file not found", 404
+    except Exception as e:
+        print(f"Error serving invoice: {str(e)}")
+        return f"Error serving invoice: {str(e)}", 500
 
 
 # ============== DATABASE INITIALIZATION ==============

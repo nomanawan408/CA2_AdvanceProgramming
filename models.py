@@ -70,6 +70,10 @@ class Event(db.Model):
         """Get number of registered students"""
         return len(self.registrations)
     
+    def available_slots(self):
+        """Get number of available slots"""
+        return self.capacity - self.get_registered_count()
+    
     def is_full(self):
         """Check if event is at capacity"""
         return self.get_registered_count() >= self.capacity
