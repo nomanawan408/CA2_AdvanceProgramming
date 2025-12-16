@@ -36,7 +36,7 @@ def test_event_available_slots_and_is_full(app):
         assert event.available_slots() == 1
         assert event.is_full() is False
 
-        student2 = User(name="Student2", email="student2@dbs.ie", role="student")
+        student2 = User(student_number="S0002", name="Student2", email="student2@dbs.ie", role="student")
         student2.set_password("student123")
         db.session.add(student2)
         db.session.commit()

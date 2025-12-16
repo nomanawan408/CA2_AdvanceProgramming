@@ -56,17 +56,26 @@ def register():
         return redirect(url_for("public.dashboard"))
 
     if request.method == "POST":
+        student_number = request.form.get("student_number")
         name = request.form.get("name")
         email = request.form.get("email")
         password = request.form.get("password")
+
+        if not student_number or student_number.strip() == "":
+            flash("Student ID is required", "danger")
+            return render_template("register.html")
 
         # Check if user already exists
         if User.query.filter_by(email=email).first():
             flash("Email already registered", "danger")
             return render_template("register.html")
 
+        if User.query.filter_by(student_number=student_number).first():
+            flash("Student ID already registered", "danger")
+            return render_template("register.html")
+
         # Create new student user
-        user = User(name=name, email=email, role="student")
+        user = User(student_number=student_number, name=name, email=email, role="student")
         user.set_password(password)
         # db session commit is handled in main app context
         from models import db

@@ -83,7 +83,7 @@ def init_db():
             db.session.add(organizer)
             
             # Create sample student
-            student = User(name='Jane Student', email='student@dbs.ie', role='student')
+            student = User(student_number='S0001', name='Jane Student', email='student@dbs.ie', role='student')
             student.set_password('student123')
             db.session.add(student)
             

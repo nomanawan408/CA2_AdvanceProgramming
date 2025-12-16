@@ -11,6 +11,7 @@ db = SQLAlchemy()
 class User(UserMixin, db.Model):
     """User model for all three roles: superadmin, organizer, student"""
     id = db.Column(db.Integer, primary_key=True)
+    student_number = db.Column(db.String(50), unique=True, nullable=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(200), nullable=False)
     name = db.Column(db.String(100), nullable=False)

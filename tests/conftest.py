@@ -38,7 +38,7 @@ def app(tmp_path):
         organizer = User(name="Organizer", email="organizer@dbs.ie", role="organizer")
         organizer.set_password("org123")
 
-        student = User(name="Student", email="student@dbs.ie", role="student")
+        student = User(student_number="S0001", name="Student", email="student@dbs.ie", role="student")
         student.set_password("student123")
 
         db.session.add_all([admin, organizer, student])

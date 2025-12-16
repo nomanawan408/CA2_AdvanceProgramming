@@ -39,6 +39,14 @@ def admin_organizers():
     return render_template("admin/organizers.html", organizers=organizers)
 
 
+@admin_bp.route("/admin/students", endpoint="admin_students")
+@admin_required
+def admin_students():
+    """List all students"""
+    students = User.query.filter_by(role="student").all()
+    return render_template("admin/students.html", students=students)
+
+
 @admin_bp.route("/admin/add-organizer", methods=["GET", "POST"], endpoint="admin_add_organizer")
 @admin_required
 def admin_add_organizer():

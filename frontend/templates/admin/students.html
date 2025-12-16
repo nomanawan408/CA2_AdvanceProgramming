@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Students - Admin{% endblock %}
+
+{% block auth_content %}
+<div class="mb-6">
+    <h1 class="text-3xl font-bold text-gray-800">Students</h1>
+    <p class="text-gray-600">View all student accounts</p>
+</div>
+
+{% if students %}
+<div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <table class="w-full">
+        <thead class="bg-gray-100">
+            <tr>
+                <th class="px-6 py-3 text-left text-gray-700 font-semibold">Student ID</th>
+                <th class="px-6 py-3 text-left text-gray-700 font-semibold">Name</th>
+                <th class="px-6 py-3 text-left text-gray-700 font-semibold">Email</th>
+                <th class="px-6 py-3 text-left text-gray-700 font-semibold">Role</th>
+                <th class="px-6 py-3 text-left text-gray-700 font-semibold">Created</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr class="border-b hover:bg-gray-50">
+                <td class="px-6 py-4">{{ student.student_number or '-' }}</td>
+                <td class="px-6 py-4">{{ student.name }}</td>
+                <td class="px-6 py-4">{{ student.email }}</td>
+                <td class="px-6 py-4"><span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold">{{ student.role | capitalize }}</span></td>
+                <td class="px-6 py-4">{{ student.created_at.strftime('%Y-%m-%d') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="text-center py-12 bg-white rounded-lg shadow-md">
+    <p class="text-gray-500 text-xl">No students yet</p>
+</div>
+{% endif %}
+{% endblock %}
