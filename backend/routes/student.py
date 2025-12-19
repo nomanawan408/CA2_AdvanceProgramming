@@ -134,3 +134,30 @@ def browse_events():
         available_events=available_events,
         registered_events=registered_events
     )
+
+
+@student_bp.route("/student/event-history", endpoint="event_history")
+@student_required
+def event_history():
+    """Show student's event history including past events"""
+    # Get all registrations for this student
+    all_registrations = Registration.query.filter_by(student_id=current_user.id).all()
+    
+    # Separate into upcoming and past events
+    upcoming_registrations = []
+    past_registrations = []
+    
+    for reg in all_registrations:
+        if reg.event.event_date >= datetime.utcnow():
+            upcoming_registrations.append(reg)
+        else:
+            past_registrations.append(reg)
+    
+    # Sort past events by date (most recent first)
+    past_registrations.sort(key=lambda x: x.event.event_date, reverse=True)
+    
+    return render_template(
+        "student/event_history.html",
+        upcoming_registrations=upcoming_registrations,
+        past_registrations=past_registrations
+    )
