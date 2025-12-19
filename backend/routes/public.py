@@ -1,10 +1,49 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import login_user, logout_user, login_required, current_user
 
-from models import User, Event
+from models import db, User, Event
 
 
 public_bp = Blueprint("public", __name__)
+
+
+@public_bp.route("/setup", methods=["GET", "POST"], endpoint="setup")
+def setup():
+    """Initial setup page for creating first admin when database is empty"""
+    # Check if any users already exist
+    if User.query.first():
+        flash("Setup already completed. Please login.", "info")
+        return redirect(url_for("public.login"))
+    
+    if request.method == "POST":
+        name = request.form.get("name")
+        email = request.form.get("email")
+        password = request.form.get("password")
+        confirm_password = request.form.get("confirm_password")
+        
+        # Validation
+        if not all([name, email, password, confirm_password]):
+            flash("All fields are required", "danger")
+            return render_template("setup.html")
+        
+        if password != confirm_password:
+            flash("Passwords do not match", "danger")
+            return render_template("setup.html")
+        
+        if len(password) < 6:
+            flash("Password must be at least 6 characters", "danger")
+            return render_template("setup.html")
+        
+        # Create first admin
+        admin = User(name=name, email=email, role="superadmin")
+        admin.set_password(password)
+        db.session.add(admin)
+        db.session.commit()
+        
+        flash("Admin account created successfully! Please login.", "success")
+        return redirect(url_for("public.login"))
+    
+    return render_template("setup.html")
 
 
 @public_bp.route("/", endpoint="index")
@@ -78,8 +117,6 @@ def register():
         user = User(student_number=student_number, name=name, email=email, role="student")
         user.set_password(password)
         # db session commit is handled in main app context
-        from models import db
-
         db.session.add(user)
         db.session.commit()
 

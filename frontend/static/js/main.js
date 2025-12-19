@@ -55,3 +55,45 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+// Event filtering functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const eventCards = document.querySelectorAll('.event-card');
+    const visibleCountElement = document.getElementById('visible-events-count');
+    
+    if (filterButtons.length === 0 || eventCards.length === 0) return;
+    
+    filterButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            const filterType = this.getAttribute('data-filter');
+            
+            // Update button styles
+            filterButtons.forEach(function(btn) {
+                btn.classList.remove('bg-blue-600', 'text-white');
+                btn.classList.add('bg-gray-200', 'text-gray-700');
+            });
+            
+            this.classList.remove('bg-gray-200', 'text-gray-700');
+            this.classList.add('bg-blue-600', 'text-white');
+            
+            // Filter events
+            let visibleCount = 0;
+            eventCards.forEach(function(card) {
+                const priceType = card.getAttribute('data-price-type');
+                
+                if (filterType === 'all' || priceType === filterType) {
+                    card.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // Update visible count
+            if (visibleCountElement) {
+                visibleCountElement.textContent = visibleCount;
+            }
+        });
+    });
+});

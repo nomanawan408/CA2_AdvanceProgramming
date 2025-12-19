@@ -66,68 +66,8 @@ def serve_invoice(filename):
 # ============== DATABASE INITIALIZATION ==============
 
 def init_db():
-    """Initialize database with sample data"""
+    """Initialize database with empty schema"""
     with app.app_context():
         db.create_all()
-        
-        # Check if admin exists
-        if not User.query.filter_by(email='admin@dbs.ie').first():
-            # Create superadmin
-            admin = User(name='Super Admin', email='admin@dbs.ie', role='superadmin')
-            admin.set_password('admin123')
-            db.session.add(admin)
-            
-            # Create sample organizer
-            organizer = User(name='John Organizer', email='organizer@dbs.ie', role='organizer')
-            organizer.set_password('org123')
-            db.session.add(organizer)
-            
-            # Create sample student
-            student = User(student_number='S0001', name='Jane Student', email='student@dbs.ie', role='student')
-            student.set_password('student123')
-            db.session.add(student)
-            
-            db.session.commit()
-            
-            # Create sample society
-            society = Society(
-                name='Tech Society',
-                description='Technology and Innovation Club',
-                society_head_id=organizer.id
-            )
-            db.session.add(society)
-            db.session.commit()
-            
-            # Create sample free event
-            free_event = Event(
-                title='Welcome Day 2025 (Free)',
-                description='Welcome event for new students',
-                event_date=datetime(2025, 1, 15, 10, 0),
-                location='Main Hall',
-                capacity=100,
-                is_paid=False,
-                cost=0.0,
-                society_id=society.id,
-                created_by=organizer.id
-            )
-            db.session.add(free_event)
-            
-            # Create sample paid event
-            paid_event = Event(
-                title='Cyber Security Workshop (Paid)',
-                description='Advanced workshop on cyber security techniques.',
-                event_date=datetime(2025, 2, 20, 14, 0),
-                location='Lecture Theatre 1',
-                capacity=30,
-                is_paid=True,
-                cost=25.00,
-                society_id=society.id,
-                created_by=organizer.id
-            )
-            db.session.add(paid_event)
-            db.session.commit()
-            
-            print("Database initialized with sample data")
-            print("Admin: admin@dbs.ie / admin123")
-            print("Organizer: organizer@dbs.ie / org123")
-            print("Student: student@dbs.ie / student123")
+        print("Database initialized with empty schema")
+        print("Visit http://localhost:5000/ to create first admin account")

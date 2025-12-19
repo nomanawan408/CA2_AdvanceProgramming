@@ -62,6 +62,67 @@ def organizer_add_event():
     return render_template("organizer/add_event.html", society=society)
 
 
+@organizer_bp.route("/organizer/edit-event/<int:event_id>", methods=["GET", "POST"], endpoint="organizer_edit_event")
+@organizer_required
+def organizer_edit_event(event_id):
+    """Edit existing event (organizer only for their own events)"""
+    event = Event.query.get_or_404(event_id)
+    
+    # Check if event belongs to current organizer
+    if event.created_by != current_user.id:
+        flash("Access denied. You can only edit your own events.", "danger")
+        return redirect(url_for("organizer.organizer_events"))
+    
+    society = Society.query.filter_by(society_head_id=current_user.id).first()
+
+    if request.method == "POST":
+        title = request.form.get("title")
+        description = request.form.get("description")
+        event_date = request.form.get("event_date")
+        location = request.form.get("location")
+        capacity = request.form.get("capacity")
+        is_paid = request.form.get("is_paid") == "on"
+        cost = float(request.form.get("cost")) if is_paid else 0.0
+
+        # Check if new capacity is less than current registrations
+        if int(capacity) < len(event.registrations):
+            flash(f"Cannot reduce capacity to {capacity}. Event already has {len(event.registrations)} registrations.", "danger")
+            return render_template("organizer/edit_event.html", event=event, society=society)
+
+        event_date_obj = datetime.strptime(event_date, "%Y-%m-%dT%H:%M")
+
+        event.title = title
+        event.description = description
+        event.event_date = event_date_obj
+        event.location = location
+        event.capacity = int(capacity)
+        event.is_paid = is_paid
+        event.cost = cost
+        
+        db.session.commit()
+        flash(f'Event "{title}" updated successfully', "success")
+        return redirect(url_for("organizer.organizer_events"))
+
+    return render_template("organizer/edit_event.html", event=event, society=society)
+
+
+@organizer_bp.route("/organizer/delete-event/<int:event_id>", methods=["POST"], endpoint="organizer_delete_event")
+@organizer_required
+def organizer_delete_event(event_id):
+    """Delete an event (organizer only for their own events)"""
+    event = Event.query.get_or_404(event_id)
+    
+    # Check if event belongs to current organizer
+    if event.created_by != current_user.id:
+        flash("Access denied. You can only delete your own events.", "danger")
+        return redirect(url_for("organizer.organizer_events"))
+    
+    db.session.delete(event)
+    db.session.commit()
+    flash(f'Event "{event.title}" deleted successfully', "success")
+    return redirect(url_for("organizer.organizer_events"))
+
+
 @organizer_bp.route("/organizer/events", endpoint="organizer_events")
 @organizer_required
 def organizer_events():

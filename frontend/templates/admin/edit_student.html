@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Student - DBS Events{% endblock %}
+
+{% block auth_content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-2xl mx-auto px-4">
+        <div class="bg-white rounded-lg shadow-md p-8">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">Edit Student</h2>
+            
+            <form method="POST" action="{{ url_for('admin.admin_edit_student', student_id=student.id) }}">
+                <div class="space-y-6">
+                    <div>
+                        <label for="student_number" class="block text-gray-700 font-semibold mb-2">Student ID</label>
+                        <input type="text" id="student_number" name="student_number" value="{{ student.student_number }}" required 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label for="name" class="block text-gray-700 font-semibold mb-2">Full Name</label>
+                        <input type="text" id="name" name="name" value="{{ student.name }}" required 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label for="email" class="block text-gray-700 font-semibold mb-2">Email Address</label>
+                        <input type="email" id="email" name="email" value="{{ student.email }}" required 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label for="password" class="block text-gray-700 font-semibold mb-2">New Password (leave blank to keep current)</label>
+                        <input type="password" id="password" name="password" 
+                               placeholder="Enter new password or leave blank"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    
+                    <div class="bg-gray-100 p-4 rounded-lg">
+                        <p class="text-sm text-gray-600">
+                            <strong>Account Info:</strong><br>
+                            Role: {{ student.role }}<br>
+                            Created: {{ student.created_at.strftime('%Y-%m-%d') if student.created_at else 'N/A' }}
+                        </p>
+                    </div>
+                    
+                    <div class="flex space-x-4">
+                        <button type="submit" class="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition">
+                            Update Student
+                        </button>
+                        <a href="{{ url_for('admin.admin_students') }}" class="flex-1 bg-gray-300 text-gray-700 py-3 px-6 rounded-lg font-semibold hover:bg-gray-400 transition text-center">
+                            Cancel
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
